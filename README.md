@@ -100,7 +100,7 @@ lower_bound = 0.25
 ## API key
 
 OpenRouter API key is read from `API_KEY` environment variable. If ran locally API key is usually not
-needed unless your local server has been configured to require it. Categories based o
+needed unless your local server has been configured to require it.
 
 For example:
 ```bash
@@ -140,8 +140,32 @@ placeholders (`SlotTypes` output column). Variable categories are based on class
 | `<OTP>` | Any other dynamic value                          |
 
 
-## Pipeline
+## Benchmark
 
+See `benchmark.py` for details.
+
+Dataset: [LogHub-2.0 full](https://github.com/logpai/loghub-2.0)
+
+
+| dataset     |      GA |      PA |  LLM calls  |   Time (m)   |
+|:------------|--------:|--------:|------------:|-------------:|
+| HDFS        |   0.999 |   0.948 |          47 |         4.71 |
+| Hadoop      |   0.958 |   0.863 |         383 |        16.82 |
+| Spark       |   0.997 |   0.965 |         395 |        40.45 |
+| Zookeeper   |   0.99  |   0.825 |          82 |         5.36 |
+| BGL         |   0.93  |   0.954 |         363 |        24.36 |
+| HPC         |   0.787 |   0.911 |         103 |         8.02 |
+| Thunderbird | nan     | nan     |         nan |       nan    |
+| Linux       |   0.246 |   0.294 |         389 |        22.13 |
+| HealthApp   |   0.982 |   0.559 |         242 |        11.48 |
+| Apache      |   0.997 |   0.994 |         223 |         4.95 |
+| Proxifier   |   0.51  |   0.521 |          14 |         0.43 |
+| OpenSSH     |   0.78  |   0.721 |          41 |         4.94 |
+| OpenStack   |   0.355 |   0.327 |          37 |         1.11 |
+| Mac         |   0.789 |   0.565 |         767 |        31.46 |
+| **Average** |   0.794 |   0.727 |         237 |        13.55 |
+
+## Pipeline
 
 ```mermaid
 flowchart TD
