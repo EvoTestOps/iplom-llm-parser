@@ -12,6 +12,28 @@ from iplom_llm_parser.pipeline import TemplatePipeline, write_config, write_outp
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
+# Config file used for benchmark:
+# [pipeline]
+# content_col = "Content"
+# llm_sample_n = 5
+# repool_passes = 2
+# template_correction = true
+# infer_slot_regexes = true
+# singleton_fallback = true
+#
+# [llm]
+# provider = "local"
+# model = "google/gemma-4-26b-a4b-qat"
+# max_concurrent = 3
+# timeout = 60
+# max_tokens_per_log = 0
+# base_url = "http://localhost:1234/v1"
+# prompt = "default"
+#
+# [iplom]
+# CT = 0.15
+# lower_bound = 0.25
+
 
 def scaled_chunk_size(
     n_rows: int,
