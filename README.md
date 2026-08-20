@@ -10,8 +10,7 @@ with LLM-based template extraction without labeled data.
 ## Quick start
 
 ```bash
-uv sync
-source .venv/bin/activate
+pip install git+https://github.com/EvoTestOps/iplom-llm-parser
 ```
 
 
