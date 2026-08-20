@@ -1,0 +1,21 @@
+[project]
+name = "iplom-llm-parser"
+version = "0.1.0"
+description = "A log parsing pipeline that combines fast syntactic clustering (IPLoM) with LLM-based template extraction without labeled data."
+readme = "README.md"
+authors = [
+    { name = "simo", email = "49877847+saimouu@users.noreply.github.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "polars>=1.43.2",
+    "pydantic-ai-slim[openrouter]>=2.32.1",
+    "regex>=2026.7.19",
+]
+
+[project.scripts]
+iplom-llm-parser = "iplom_llm_parser:main"
+
+[build-system]
+requires = ["uv_build>=0.12.2,<0.13.0"]
+build-backend = "uv_build"
