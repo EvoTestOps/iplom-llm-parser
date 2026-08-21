@@ -90,6 +90,10 @@ timeout = 60
 max_tokens_per_log = 0                # truncate logs exceeding max tokens; 0 for off
 base_url = "http://localhost:1234/v1" # required when provider = "local"
 prompt = "default"                    # default, simple or no_example
+reasoning = false                     # depending on the model might be ignored
+temperature = 0.0
+
+# api_key = "..."                     # prefer API_KEY env var
 
 [iplom]
 CT = 0.3
@@ -98,8 +102,8 @@ lower_bound = 0.25
 
 ## API key
 
-OpenRouter API key is read from `API_KEY` environment variable. If ran locally API key is usually not
-needed unless your local server has been configured to require it.
+OpenRouter API key is read from `API_KEY` environment variable. If ran locally API key is usually not needed unless your local server has been configured to require it.
+Alternatively, API key can be passed in the configuration file or directly `LLMConfig(api_key="sk-or-v1...")`.
 
 For example:
 ```bash
@@ -163,6 +167,7 @@ Dataset: [LogHub-2.0 full](https://github.com/logpai/loghub-2.0)
 | OpenStack   |   0.355 |   0.327 |          37 |         1.11 |
 | Mac         |   0.789 |   0.565 |         767 |        31.46 |
 | **Average** |   0.794 |   0.727 |         237 |        13.55 |
+
 
 ## Pipeline
 

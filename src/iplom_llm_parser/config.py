@@ -26,6 +26,9 @@ class LLMConfig(BaseModel):
     timeout: int = 60
     max_tokens_per_log: int | None = None
     prompt: Literal["default", "no_example", "simple"] = "default"
+    reasoning: bool = False
+    temperature: float = 0.0
+    api_key: str | None = None
 
     @field_validator("max_tokens_per_log")
     @classmethod

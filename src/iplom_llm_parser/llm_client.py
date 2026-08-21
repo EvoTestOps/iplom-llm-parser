@@ -5,6 +5,8 @@ import os
 import regex as re
 from pydantic import BaseModel
 from pydantic_ai import Agent
+from pydantic_ai.models.openai import OpenAIChatModel
+from pydantic_ai.models.openrouter import OpenRouterModel
 from pydantic_ai.settings import ModelSettings
 
 from iplom_llm_parser.config import LLMConfig
@@ -78,45 +80,58 @@ class TemplateResult(BaseModel):
     template: str
 
 
-def _build_model(config: LLMConfig):
+def _resole_api_key(config: LLMConfig) -> str:
+    if config.api_key:
+        return config.api_key
+
+    env_api_key = os.environ.get("API_KEY")
+    if config.provider == "local":
+        if not env_api_key:
+            logger.warning(
+                "API_KEY not set, depending on local LLM configuration this might fail"
+            )
+        return env_api_key or "local"
+
+    if not env_api_key:
+        raise RuntimeError(
+            "API_KEY not found. Set API_KEY env var or pass llm.api_key in config."
+        )
+    return env_api_key
+
+
+def _build_model(config: LLMConfig) -> OpenAIChatModel | OpenRouterModel:
     if config.provider == "local":
         from pydantic_ai.models.openai import OpenAIChatModel
         from pydantic_ai.providers.openai import OpenAIProvider
 
-        api_key = os.environ.get("API_KEY", "local")
-        if not api_key:
-            logger.warning(
-                "API_KEY not set, depending on local LLM configuration this might fail"
-            )
         return OpenAIChatModel(
             config.model,
-            provider=OpenAIProvider(base_url=config.base_url, api_key=api_key),
+            provider=OpenAIProvider(
+                base_url=config.base_url, api_key=_resole_api_key(config)
+            ),
         )
     else:
         from pydantic_ai.models.openrouter import OpenRouterModel
         from pydantic_ai.providers.openrouter import OpenRouterProvider
 
-        api_key = os.environ.get("API_KEY")
-        if not api_key:
-            raise RuntimeError("API_KEY environment variable is not set")
         return OpenRouterModel(
             config.model,
-            provider=OpenRouterProvider(api_key=api_key),
+            provider=OpenRouterProvider(api_key=_resole_api_key(config)),
         )
 
 
 class LLMClient:
     def __init__(self, config: LLMConfig):
-        # Model settings try to turn thinking off but depending on the model
-        #  it might be silently ignored
         self._agent = Agent(
             _build_model(config),
             output_type=TemplateResult,
             system_prompt="You are an expert log parser.",
             model_settings=ModelSettings(
-                temperature=0,
-                thinking=False,
-                extra_body={"thinking": {"type": "disabled"}},
+                temperature=config.temperature,
+                thinking=config.reasoning,
+                extra_body={
+                    "thinking": {"type": "enabled" if config.reasoning else "disabled"}
+                },
             ),
         )
         self._config = config

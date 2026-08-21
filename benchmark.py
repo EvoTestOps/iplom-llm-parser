@@ -131,7 +131,7 @@ def run_all(config: Config):
 
             try:
                 metrics = evaluate(
-                    f"full_loghub-2.0/{dataset}/{dataset}_full.log_structured.csv",
+                    f"{parent_dir}/{dataset}/{dataset}_full.log_structured.csv",
                     out_path,
                     template_correction=False,
                     verbose=False,
