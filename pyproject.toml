@@ -8,7 +8,7 @@ authors = [
 ]
 requires-python = ">=3.11"
 dependencies = [
-    "polars>=1.43.2",
+    "polars>=1.38.0",
     "pydantic-ai-slim[openrouter]>=2.32.1",
     "regex>=2026.7.19",
 ]
