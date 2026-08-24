@@ -17,8 +17,8 @@ from iplom_llm_parser.pipeline import (
 __all__ = [
     "Config",
     "IPLoMConfig",
-    "LLMConfig",
     "LLMClient",
+    "LLMConfig",
     "PipelineConfig",
     "RunStats",
     "TemplatePipeline",

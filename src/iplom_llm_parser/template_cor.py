@@ -50,13 +50,13 @@ def correct_single_template(template):
     template = re.sub(r"\s+", " ", template)
 
     # PS
-    p_tokens = re.split('(' + '|'.join(path_delimiters) + ')', template)
+    p_tokens = re.split("(" + "|".join(path_delimiters) + ")", template)
     new_p_tokens = []
     for p_token in p_tokens:
-        if re.match(r'^(\/[^\/]+)+$', p_token):
-            p_token = '<*>'
+        if re.match(r"^(\/[^\/]+)+$", p_token):
+            p_token = "<*>"
         new_p_tokens.append(p_token)
-    template = ''.join(new_p_tokens)
+    template = "".join(new_p_tokens)
 
     tokens = re.split("(" + "|".join(token_delimiters) + ")", template)
     new_tokens = []
@@ -66,9 +66,8 @@ def correct_single_template(template):
             token = "<*>"
 
         # WV
-        if re.match(r"^[^\s\/]*<\*>[^\s\/]*$", token):
-            if token != "<*>/<*>":
-                token = "<*>"
+        if re.match(r"^[^\s\/]*<\*>[^\s\/]*$", token) and token != "<*>/<*>":
+            token = "<*>"
 
         new_tokens.append(token)
 

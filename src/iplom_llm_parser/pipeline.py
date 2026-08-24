@@ -249,7 +249,6 @@ class TemplatePipeline:
     def _build_result_df_from_files(
         self, chunk_files: list[str], temp_dir: tempfile.TemporaryDirectory
     ) -> pl.DataFrame:
-        """Lazy construction & memory-efficient joining for multi-million row datasets."""
         id_col = "LineId" if "LineId" in self.full_df.columns else "row_nr"
 
         if chunk_files:

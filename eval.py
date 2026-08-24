@@ -92,9 +92,7 @@ def template_metrics(gt: pl.DataFrame, parsed: pl.DataFrame) -> dict:
     )
 
     gt_templates = set(merged["gt_template"].unique().to_list())
-    pred_templates = set(
-        t for t in merged["pred_template"].unique().to_list() if t is not None
-    )
+    pred_templates = {t for t in merged["pred_template"].unique() if t is not None}
 
     exact_matches = gt_templates & pred_templates
     precision = len(exact_matches) / len(pred_templates) if pred_templates else 0.0

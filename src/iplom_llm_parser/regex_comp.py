@@ -5,17 +5,18 @@ import regex as re
 logger = logging.getLogger(__name__)
 
 SLOT_TYPE = {
-    "OID": dict(numeric_ok=False, spans_ws=False),
-    "LOI": dict(numeric_ok=False, spans_ws=False),
-    "OBN": dict(numeric_ok=False, spans_ws=False),
-    "SID": dict(numeric_ok=True, spans_ws=False),
-    "TDA": dict(numeric_ok=True, spans_ws=True),
-    "CRS": dict(numeric_ok=True, spans_ws=False),
-    "OBA": dict(numeric_ok=True, spans_ws=False),
-    "STC": dict(numeric_ok=True, spans_ws=False),
-    "OTP": dict(numeric_ok=False, spans_ws=True),
+    "OID": {"numeric_ok": False, "spans_ws": False},
+    "LOI": {"numeric_ok": False, "spans_ws": False},
+    "OBN": {"numeric_ok": False, "spans_ws": False},
+    "TID": {"numeric_ok": False, "spans_ws": False},
+    "SID": {"numeric_ok": True, "spans_ws": False},
+    "TDA": {"numeric_ok": True, "spans_ws": True},
+    "CRS": {"numeric_ok": True, "spans_ws": False},
+    "OBA": {"numeric_ok": True, "spans_ws": False},
+    "STC": {"numeric_ok": True, "spans_ws": False},
+    "OTP": {"numeric_ok": False, "spans_ws": True},
 }
-_DEFAULT_SLOT = dict(numeric_ok=False, spans_ws=False)
+_DEFAULT_SLOT = {"numeric_ok": False, "spans_ws": False}
 
 
 def compile_template(

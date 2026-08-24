@@ -128,7 +128,7 @@ class LLMClient:
                 self._output_tokens += output_tokens or 0
 
                 return result.output.template
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 logger.error(
                     f"LLM query timed out after {self._config.timeout}s | sample: {sample_messages[0][:30]}..."
                 )
@@ -177,9 +177,9 @@ class LLMClient:
 
 
 def postprocess(template: str, template_correction: bool) -> tuple[str, list[str]]:
-    slot_types = re.findall(r"<(OID|LOI|OBN|SID|TDA|CRS|OBA|STC|OTP)>", template)
+    slot_types = re.findall(r"<(OID|LOI|OBN|TID|SID|TDA|CRS|OBA|STC|OTP)>", template)
 
-    template = re.sub(r"<(OID|LOI|OBN|SID|TDA|CRS|OBA|STC|OTP)>", "<*>", template)
+    template = re.sub(r"<(OID|LOI|OBN|TID|SID|TDA|CRS|OBA|STC|OTP)>", "<*>", template)
     template = re.sub(r"\{[^}]+\}", "<*>", template)
     template = re.sub(r"<(?!\*>)[^>]+>", "<*>", template)
     template = re.sub(r"<(?!\*>)[^>]*>", "<*>", template)

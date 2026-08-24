@@ -110,7 +110,7 @@ class IPLoM:
 
         if min_count > 1:
             row_dict = partition.df.partition_by(min_col, as_dict=True)
-            for _, dataframe in row_dict.items():
+            for dataframe in row_dict.values():
                 split_value = dataframe[min_col][0]
                 child = Partition(
                     dataframe,
