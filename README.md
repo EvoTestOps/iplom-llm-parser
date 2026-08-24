@@ -81,6 +81,7 @@ llm_sample_n = 10                     # sample size per partition sent to the LL
 repool_passes = 3                     # retries for unmatched rows
 template_correction = true            # apply regex cleanup rules to LLM-generated templates
 infer_slot_regexes = true             # build typed per-slot regexes instead of generic one
+singleton_fallback = true             # in worst case send singular log message to LLM
 
 [llm]
 provider = "local"                    # "local" or "openrouter"
@@ -150,7 +151,7 @@ See `benchmark.py` for details.
 Dataset: [LogHub-2.0 full](https://github.com/logpai/loghub-2.0)
 
 
-| dataset     |      GA |      PA |  LLM calls  |   Time (m)   |
+| Dataset     |      GA |      PA |  LLM calls  |   Time (m)   |
 |:------------|--------:|--------:|------------:|-------------:|
 | HDFS        |   0.999 |   0.948 |          47 |         4.71 |
 | Hadoop      |   0.958 |   0.863 |         383 |        16.82 |
