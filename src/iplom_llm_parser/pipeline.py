@@ -231,9 +231,11 @@ class TemplatePipeline:
             result_df = pl.DataFrame(schema={**schema, "EventId": pl.String})
 
         id_col = "LineId" if "LineId" in self.full_df.columns else "row_nr"
+        select_cols = ["row_nr"] if id_col == "row_nr" else ["row_nr", id_col]
+        select_cols.append(self.config.content_col)
 
         return (
-            self.full_df.select("row_nr", id_col, self.config.content_col)
+            self.full_df.select(*select_cols)
             .join(result_df, on="row_nr", how="left")
             .select(
                 pl.col(id_col).alias("LineId"),
@@ -250,6 +252,8 @@ class TemplatePipeline:
         self, chunk_files: list[str], temp_dir: tempfile.TemporaryDirectory
     ) -> pl.DataFrame:
         id_col = "LineId" if "LineId" in self.full_df.columns else "row_nr"
+        select_cols = ["row_nr"] if id_col == "row_nr" else ["row_nr", id_col]
+        select_cols.append(self.config.content_col)
 
         if chunk_files:
             results_lazy = pl.scan_parquet(chunk_files)
@@ -277,7 +281,7 @@ class TemplatePipeline:
 
             final_df = (
                 self.full_df.lazy()
-                .select("row_nr", id_col, self.config.content_col)
+                .select(*select_cols)
                 .join(result_df, on="row_nr", how="left")
                 .select(
                     pl.col(id_col).alias("LineId"),
