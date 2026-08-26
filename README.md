@@ -104,12 +104,12 @@ lower_bound = 0.25
 
 ## API key
 
-OpenRouter API key is read from `API_KEY` environment variable. If ran locally API key is usually not needed unless your local server has been configured to require it.
+OpenRouter API key is read from `OPENROUTER_API_KEY` or `API_KEY` environment variable. If ran locally API key is usually not needed unless your local server has been configured to require it.
 Alternatively, API key can be passed in the configuration file or directly `LLMConfig(api_key="sk-or-v1...")`.
 
 For example:
 ```bash
-API_KEY=sk-or-v1-... python3 main.py
+OPENROUTER_API_KEY=sk-or-v1-... python3 main.py
 ```
 
 ## Local model requirements
