@@ -112,6 +112,7 @@ name = "iplom-llm-parser"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "httpx2" },
     { name = "polars" },
     { name = "pydantic-ai-slim", extra = ["openrouter"] },
     { name = "regex" },
@@ -124,6 +125,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "httpx2", specifier = ">=2.12.0" },
     { name = "polars", specifier = ">=1.38.0" },
     { name = "pydantic-ai-slim", extras = ["openrouter"], specifier = ">=2.32.1" },
     { name = "regex", specifier = ">=2026.7.19" },

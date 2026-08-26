@@ -21,6 +21,7 @@ class PipelineConfig(BaseModel):
 class LLMConfig(BaseModel):
     provider: Literal["local", "openrouter"]
     model: str
+    verify_connection: bool = True
     base_url: str | None = None
     max_concurrent: int = 4
     timeout: int = 60

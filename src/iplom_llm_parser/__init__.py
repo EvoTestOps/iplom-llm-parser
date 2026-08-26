@@ -5,7 +5,7 @@ from iplom_llm_parser.config import (
     PipelineConfig,
     load_config,
 )
-from iplom_llm_parser.llm_client import LLMClient
+from iplom_llm_parser.llm_client import LLMClient, check_llm_connection
 from iplom_llm_parser.pipeline import (
     RunStats,
     TemplatePipeline,
@@ -22,6 +22,7 @@ __all__ = [
     "PipelineConfig",
     "RunStats",
     "TemplatePipeline",
+    "check_llm_connection",
     "load_config",
     "write_config",
     "write_output",
