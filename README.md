@@ -86,6 +86,7 @@ singleton_fallback = true             # in worst case send singular log message 
 [llm]
 provider = "local"                    # "local" or "openrouter"
 model = "google/gemma-4-12b-qat"
+verify_connection = true              # check connection before parsing
 max_concurrent = 4
 timeout = 60
 max_tokens_per_log = 0                # truncate logs exceeding max tokens; 0 for off

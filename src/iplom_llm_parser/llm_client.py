@@ -2,6 +2,7 @@ import asyncio
 import logging
 import os
 
+import httpx2
 import regex as re
 from pydantic import BaseModel
 from pydantic_ai import Agent
@@ -20,11 +21,16 @@ class TemplateResult(BaseModel):
     template: str
 
 
-def _resole_api_key(config: LLMConfig) -> str:
+class LLMConnectionError(RuntimeError):
+    """Raised when the configured LLM endpoint is unreachable, unauthenticated,
+    or not serving the configured model."""
+
+
+def _resolve_api_key(config: LLMConfig) -> str:
     if config.api_key:
         return config.api_key
 
-    env_api_key = os.environ.get("API_KEY")
+    env_api_key = os.environ.get("API_KEY") or os.environ.get("OPENROUTER_API_KEY")
     if config.provider == "local":
         if not env_api_key:
             logger.warning(
@@ -34,34 +40,92 @@ def _resole_api_key(config: LLMConfig) -> str:
 
     if not env_api_key:
         raise RuntimeError(
-            "API_KEY not found. Set API_KEY env var or pass llm.api_key in config."
+            "API key not found. Set OPENROUTER_API_KEY (or API_KEY) env var or pass llm.api_key in config."
         )
     return env_api_key
 
 
+def check_llm_connection(llm_config: LLMConfig, timeout: float = 5.0) -> None:
+    if not llm_config.verify_connection:
+        return
+
+    try:
+        api_key = _resolve_api_key(llm_config)
+    except RuntimeError as e:
+        raise LLMConnectionError(str(e)) from e
+
+    if llm_config.provider == "local":
+        auth_url = None
+        models_url = llm_config.base_url.rstrip("/") + "/models"
+        remedy = (
+            f"Start a local OpenAI-compatible server (e.g. LM Studio) "
+            f"serving '{llm_config.model}' at {llm_config.base_url}, or switch "
+            f"provider to 'openrouter' with an API key set."
+        )
+    else:
+        auth_url = "https://openrouter.ai/api/v1/key"
+        models_url = "https://openrouter.ai/api/v1/models"
+        remedy = "Check that OPENROUTER_API_KEY (or API_KEY) holds a valid key."
+
+    headers = {"Authorization": f"Bearer {api_key}"}
+
+    def get(url: str) -> httpx2.Response:
+        try:
+            return httpx2.get(url, timeout=timeout, headers=headers)
+        except httpx2.HTTPError as e:
+            raise LLMConnectionError(
+                f"Cannot reach {url} ({type(e).__name__}). {remedy}"
+            ) from e
+
+    if auth_url:
+        response = get(auth_url)
+        if response.status_code != 200:
+            raise LLMConnectionError(
+                f"{auth_url} rejected the key with HTTP {response.status_code}. {remedy}"
+            )
+
+    response = get(models_url)
+    if response.status_code != 200:
+        raise LLMConnectionError(
+            f"{models_url} answered HTTP {response.status_code}. {remedy}"
+        )
+
+    served = sorted(
+        filter(None, (e.get("id") for e in response.json().get("data", [])))
+    )
+    if served and llm_config.model not in served:
+        choices = (
+            "See https://openrouter.ai/models for the ids."
+            if len(served) > 20
+            else f"Available: {', '.join(served)}"
+        )
+        raise LLMConnectionError(
+            f"'{llm_config.model}' is not served by {models_url}. {choices}"
+        )
+
+
 def _build_model(config: LLMConfig) -> OpenAIChatModel | OpenRouterModel:
+    api_key = _resolve_api_key(config)
     if config.provider == "local":
         from pydantic_ai.models.openai import OpenAIChatModel
         from pydantic_ai.providers.openai import OpenAIProvider
 
         return OpenAIChatModel(
             config.model,
-            provider=OpenAIProvider(
-                base_url=config.base_url, api_key=_resole_api_key(config)
-            ),
+            provider=OpenAIProvider(base_url=config.base_url, api_key=api_key),
         )
     else:
         from pydantic_ai.models.openrouter import OpenRouterModel
         from pydantic_ai.providers.openrouter import OpenRouterProvider
 
         return OpenRouterModel(
-            config.model,
-            provider=OpenRouterProvider(api_key=_resole_api_key(config)),
+            config.model, provider=OpenRouterProvider(api_key=api_key)
         )
 
 
 class LLMClient:
     def __init__(self, config: LLMConfig):
+        check_llm_connection(config)
         self._agent = Agent(
             _build_model(config),
             output_type=TemplateResult,
